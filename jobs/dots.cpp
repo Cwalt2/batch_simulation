@@ -5,9 +5,17 @@
 #include "dots.h"
 #include "iostream"
 
-using namespace std;
+#include <iostream>
+#include <unistd.h>   // usleep()
 
-int dots() {
-    cout << "This is the dots file!!!";
+int main() {
+    std::cout << "Job: Print 50 dots\n";
+
+    for (int i = 0; i < 50; i++) {
+        std::cout << "." << std::flush;
+        usleep(50000);
+    }
+
+    std::cout << "\nJob Complete.\n";
     return 0;
 }
