@@ -18,7 +18,8 @@ class Helpers {
      bool listJobs() { // option 1
         cout << "List of Jobs:\n";
         system("ls *.cpp"); // TODO: make OS consistent + work with any directory
-        return true;
+        pause();
+         return true;
     }
 
      bool setJobsDirectory() { // option 2
@@ -46,7 +47,8 @@ class Helpers {
             cout << "Unknown option: " << option << "\n" << "exiting...\n";
         }
         cout << "New working directory is: " << fs::current_path() << "\n";
-        return true;
+       pause();
+         return true;
     }
 
      bool compile() { // option 3
@@ -61,40 +63,69 @@ class Helpers {
 
         system(command.c_str());
 
+         pause();
         return true;
     }
 
      bool compileAll() { // option 4
-        system("g++ -o a.out *.cpp && ./a.out\n");
-        pause();
+         fs::path jobsPath = fs::current_path();
 
+         if (!fs::exists(jobsPath) || !fs::is_directory(jobsPath)) {
+             std::cerr << "Jobs directory not found.\n";
+             return false;
+         }
 
-        fs::path fullPath = fs::current_path();
+         for (const auto& entry : fs::directory_iterator(jobsPath)) {
+             if (entry.path().extension() == ".cpp") {
 
-        std::string output = "job.out";
+                 std::string source = entry.path().string();
+                 std::string out = entry.path().stem().string();
 
-        std::string command =
-            "g++ " + fullPath.string() + " -o " + output +
-            " && ./" + output;
+                 std::string command =
+                     "g++ \"" + source + "\" -o \"" + out + "\" && ./" + out;
 
-        system(command.c_str());
+                 std::cout << "\nCompiling and running: " << source << "\n";
 
-        return true;
+                 int result = system(command.c_str());
+
+                 if (result != 0) {
+                     std::cerr << "Error compiling/running: " << source << "\n";
+                 }
+             }
+         }
+         pause();
     }
 
      bool shutdown() { // option 5
+         // unfortunately you have to choose twice
         cout << "shutting down...\n";
         return false;
     }
 
      bool listProgramOptions() { // option 6
-        cout << "Listing program options\n"; // TODO: figure out what this means
+        cout << "Listing program options\n";
+         cout << "1. dots.cpp\n2.factorials.cpp\n3.printer.cpp\n4.summation.cpp\n";
         pause();
         return true;
     }
 
      bool help() { // option 7
         cout << "Help/Guide\n"; // TODO: Make a guide to the program
+         cout << "The goal of this program is to simulate a "
+                 "batch system that old operating systems/mainframes used to execute programs\n"
+                 "each program simulates a small I/O delay a real batch system would have\n"
+                 "File Structure Layout:\n"
+                 "batch_simulation -|\n"
+                 "  --jobs/\n"
+                 "    -- dots.cpp\n"
+                 "    -- factorials.cpp\n"
+                 "    -- printer.cpp\n"
+                 "    -- summation.cpp\n"
+                 "Program Explanations:\n"
+                 "dots.cpp prints out 50 dots with a small delay\n"
+                 "factorials.cpp prints the factorials of 10 with a delay\n"
+                 "printer.cpp prints out 100 #'s with a small delay\n"
+                 "summation.cpp prints out the summation of 1 to 10\n";
         pause();
         return true;
     }
